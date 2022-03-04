@@ -14,3 +14,4 @@ gamelogs/
 draftlogs/
 input_options.txt
 debug.txt
+*.log

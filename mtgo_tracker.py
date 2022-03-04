@@ -15,7 +15,14 @@ import datetime
 import itertools
 import pickle
 import shutil
+import logging
+from logging.config import fileConfig
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+
+fileConfig('logging_config.ini')
+logger = logging.getLogger()
+
 pd.options.mode.chained_assignment = None
 
 # Saved data:
@@ -39,7 +46,7 @@ HERO =                   ""
 INPUT_OPTIONS =          {}
 MAIN_WINDOW_SIZE =  ("small",1000,490)
 
-test_mode =         False
+test_mode =         True
 resize =            False
 filter_dict =       {}
 display =           ""
@@ -734,7 +741,7 @@ def print_data(data,headers,update_status,start_index,apply_filter):
         # Apply existing filters.
         filtered_list = []
         for key in filter_dict:
-            print(key)
+            logger.debug(key)
             if key not in headers:
                 continue
             for i in filter_dict[key]:
@@ -4801,7 +4808,7 @@ def get_stats():
             time_stats(player.get(),opponent.get(),mformat.get(),lim_format.get(),deck.get(),opp_deck.get(),dr,s_type.get())
         elif s_type.get() == "Card Data":
             card_stats(player.get(),opponent.get(),mformat.get(),lim_format.get(),deck.get(),opp_deck.get(),dr,s_type.get())      
-        print("Loaded Data:"+player.get()+","+opponent.get()+","+mformat.get()+","+lim_format.get()+","+deck.get()+","+opp_deck.get()+","+dr[0]+","+dr[1]+","+s_type.get())
+        logger.debug("Loaded Data:"+player.get()+","+opponent.get()+","+mformat.get()+","+lim_format.get()+","+deck.get()+","+opp_deck.get()+","+dr[0]+","+dr[1]+","+s_type.get())
 
     def close_stats_window():
         window.deiconify()
@@ -4920,7 +4927,7 @@ def load_window_size_setting():
         os.chdir(cwd)
 def update_status_bar(status):
     status_label.config(text=status)
-    print(status)
+    logger.debug(status)
 def remove_record(ignore):
     global ALL_DATA
     global ALL_DATA_INVERTED
@@ -5290,62 +5297,52 @@ def associated_draftid_window(list_to_process,index,total):
     subwindow.wait_window()
 def debug():
     os.chdir(FILEPATH_ROOT)
-    with open("DEBUG.txt","w",encoding="utf-8") as txt:
-        txt.write("SETTINGS:\n")
-        txt.write(f"FILEPATH_ROOT: {FILEPATH_ROOT}\n")
-        txt.write(f"FILEPATH_EXPORT: {FILEPATH_EXPORT}\n")
-        txt.write(f"FILEPATH_LOGS: {FILEPATH_LOGS}\n")
-        txt.write(f"FILEPATH_LOGS_COPY: {FILEPATH_LOGS_COPY}\n")
-        txt.write(f"FILEPATH_DRAFTS: {FILEPATH_DRAFTS}\n")
-        txt.write(f"FILEPATH_DRAFTS_COPY: {FILEPATH_DRAFTS_COPY}\n")
-        txt.write(f"HERO: {HERO}\n")
-        txt.write(f"MAIN_WINDOW_SIZE: {MAIN_WINDOW_SIZE}\n")
-        txt.write("\n")
+    logger.debug("SETTINGS:")
+    logger.debug(f"FILEPATH_ROOT: {FILEPATH_ROOT}")
+    logger.debug(f"FILEPATH_EXPORT: {FILEPATH_EXPORT}")
+    logger.debug(f"FILEPATH_LOGS: {FILEPATH_LOGS}")
+    logger.debug(f"FILEPATH_LOGS_COPY: {FILEPATH_LOGS_COPY}")
+    logger.debug(f"FILEPATH_DRAFTS: {FILEPATH_DRAFTS}")
+    logger.debug(f"FILEPATH_DRAFTS_COPY: {FILEPATH_DRAFTS_COPY}")
+    logger.debug(f"HERO: {HERO}")
+    logger.debug(f"MAIN_WINDOW_SIZE: {MAIN_WINDOW_SIZE}")
 
-        txt.write("INPUT_OPTIONS:\n")
-        for i in INPUT_OPTIONS:
-            txt.write(f"{i}: {INPUT_OPTIONS[i]}\n")
-        txt.write("\n")
-        txt.write(f"PARSED_FILE_DICT ({str(len(PARSED_FILE_DICT))} files):\n")
-        for i in PARSED_FILE_DICT:
-            txt.write(f"{i}: {PARSED_FILE_DICT[i]}\n")
-        txt.write("\n")
-        txt.write(f"PARSED_DRAFT_DICT ({str(len(PARSED_DRAFT_DICT))} files):\n")
-        for i in PARSED_DRAFT_DICT:
-            txt.write(f"{i}: {PARSED_DRAFT_DICT[i]}\n")
-        txt.write("\n")
+    logger.debug("INPUT_OPTIONS:")
+    for i in INPUT_OPTIONS:
+        logger.debug(f"{i}: {INPUT_OPTIONS[i]}")
+    logger.debug(f"PARSED_FILE_DICT ({str(len(PARSED_FILE_DICT))} files):")
+    for i in PARSED_FILE_DICT:
+        logger.debug(f"{i}: {PARSED_FILE_DICT[i]}")
+    logger.debug(f"PARSED_DRAFT_DICT ({str(len(PARSED_DRAFT_DICT))} files):")
+    for i in PARSED_DRAFT_DICT:
+        logger.debug(f"{i}: {PARSED_DRAFT_DICT[i]}")
 
-        txt.write(f"Matches: {str(len(ALL_DATA[0]))}\n")
-        txt.write(f"Games: {str(len(ALL_DATA[1]))}\n")
-        txt.write(f"Plays: {str(len(ALL_DATA[2]))}\n")
-        txt.write(f"Drafts: {str(len(DRAFTS_TABLE))}\n")
-        txt.write(f"Picks: {str(len(PICKS_TABLE))}\n")
-        txt.write(f"Raw: {str(len(ALL_DATA[3]))}\n")
-        txt.write(f"Matches (Inverse): {str(len(ALL_DATA_INVERTED[0]))} (should be {str(len(ALL_DATA[0])*2)})\n")
-        txt.write(f"Games (Inverse): {str(len(ALL_DATA_INVERTED[1]))} (should be {str(len(ALL_DATA[1])*2)})\n")
-        txt.write(f"Plays (Inverse): {str(len(ALL_DATA_INVERTED[2]))} (should be {str(len(ALL_DATA[2]))})\n")
-        txt.write(f"Raw (Inverse): {str(len(ALL_DATA_INVERTED[3]))}\n")
-        txt.write("\n")
+    logger.debug(f"Matches: {str(len(ALL_DATA[0]))}")
+    logger.debug(f"Games: {str(len(ALL_DATA[1]))}")
+    logger.debug(f"Plays: {str(len(ALL_DATA[2]))}")
+    logger.debug(f"Drafts: {str(len(DRAFTS_TABLE))}")
+    logger.debug(f"Picks: {str(len(PICKS_TABLE))}")
+    logger.debug(f"Raw: {str(len(ALL_DATA[3]))}")
+    logger.debug(f"Matches (Inverse): {str(len(ALL_DATA_INVERTED[0]))} (should be {str(len(ALL_DATA[0])*2)})")
+    logger.debug(f"Games (Inverse): {str(len(ALL_DATA_INVERTED[1]))} (should be {str(len(ALL_DATA[1])*2)})")
+    logger.debug(f"Plays (Inverse): {str(len(ALL_DATA_INVERTED[2]))} (should be {str(len(ALL_DATA[2]))})")
+    logger.debug(f"Raw (Inverse): {str(len(ALL_DATA_INVERTED[3]))}")
 
-        txt.write("ALL_DECKS:\n")
-        txt.write(f"{list(ALL_DECKS.keys())[0]} to {list(ALL_DECKS.keys())[-1]}\n")
-        for i in ALL_DECKS:
-            txt.write(f"{i}: {str(len(ALL_DECKS[i]))}\n")
-        txt.write("\n")
+    logger.debug("ALL_DECKS:")
+    logger.debug(f"{list(ALL_DECKS.keys())[0]} to {list(ALL_DECKS.keys())[-1]}")
+    for i in ALL_DECKS:
+        logger.debug(f"{i}: {str(len(ALL_DECKS[i]))}")
 
-        txt.write("Other Variables:\n")
-        txt.write(f"    display: {display}\n")
-        txt.write(f"    prev_display: {prev_display}\n")
-        txt.write(f"    uaw: {uaw}\n")
-        txt.write(f"    field: {field}\n")
-        txt.write(f"    new_import: {new_import}\n")
-        txt.write(f"    data_loaded: {data_loaded}\n")
-        txt.write(f"    filter_changed: {filter_changed}\n")
-        txt.write(f"    ask_to_save: {ask_to_save}\n")
-        txt.write(f"    selected: {selected}\n")
-def test():
-    # Test function
-    pass
+    logger.debug("Other Variables:")
+    logger.debug(f"    display: {display}")
+    logger.debug(f"    prev_display: {prev_display}")
+    logger.debug(f"    uaw: {uaw}")
+    logger.debug(f"    field: {field}")
+    logger.debug(f"    new_import: {new_import}")
+    logger.debug(f"    data_loaded: {data_loaded}")
+    logger.debug(f"    filter_changed: {filter_changed}")
+    logger.debug(f"    ask_to_save: {ask_to_save}")
+    logger.debug(f"    selected: {selected}")
 
 window = tk.Tk() 
 window.title("MTGO-Tracker")
