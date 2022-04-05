@@ -18,7 +18,8 @@ import shutil
 import logging
 from logging.config import fileConfig
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
+from constants.ui.general import APPLICATION_NAME
+from constants.ui.general import SOFTWARE_VERSION
 
 fileConfig('logging_config.ini')
 logger = logging.getLogger()
@@ -5344,8 +5345,8 @@ def debug():
     logger.debug(f"    ask_to_save: {ask_to_save}")
     logger.debug(f"    selected: {selected}")
 
-window = tk.Tk() 
-window.title("MTGO-Tracker")
+window = tk.Tk()
+window.title("{application_name} {version}".format(application_name=APPLICATION_NAME, version=SOFTWARE_VERSION))
 window.iconbitmap(window,"icon.ico")
 
 load_window_size_setting()

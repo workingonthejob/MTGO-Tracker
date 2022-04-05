@@ -6,7 +6,6 @@ exe_command.txt
 build_mtgo_tracker.bat
 
 # AUXILIARY FILES
-icon.ico
 lists/
 save/
 export/
